@@ -46,6 +46,7 @@ class CoordinateSystem3D:
             RSHOULDER_angles.plot_angles_by_frame(render_dir, joint_name='Right Shoulder', frame_range=[941, 5756])
         except:
             print('RSHOULDER_angles failed')
+            
         '''
         self.plane = plane
         self.is_empty = False
