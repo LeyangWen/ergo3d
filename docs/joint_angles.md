@@ -12,7 +12,7 @@ The module contains the following class:
 
 Here are some key methods provided in this module:
 
-- `set_zero_frame(frame)`: Sets the zero frame for the joint angles.
+- `set_zero(frame)`: Sets the zero frame for the joint angles.
 
 - `get_flex_abd(coordinate_system, target_vector, plane_seq=['xy', 'xz'], flip_sign=[1, 1])`: Gets the flexion and abduction angles of a target vector in a coordinate system.
 

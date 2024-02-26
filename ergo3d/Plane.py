@@ -37,7 +37,7 @@ class Plane:
         self.normal_vector = Point.point_from_nparray(normal_vector_xyz)
         self.normal_vector_end = Point.translate_point(pt1, vector, direction=direction)
 
-    def project_vector(self, vector):
+    def project_vector(self, vector, optimize=True):
         """
         project a vector onto the plane
         vector as xyz
@@ -47,8 +47,12 @@ class Plane:
 
         # vector = np.array([[1,1,1],[1,1,2]]).T
         # plane_normal = np.array([[0,1,0],[0,1,0]]).T
-        angle = Point.angle(vector, plane_normal)
-        projection = vector - np.diagonal(np.dot(vector.T, plane_normal)) * plane_normal
+        # angle = Point.angle(vector, plane_normal)
+        if optimize:  # optimized for memory
+            diagonal_elements = np.einsum('ij,ij->i', vector.T, plane_normal.T)
+            projection = vector - diagonal_elements[None, :] * plane_normal
+        else:
+            projection = vector - np.diagonal(np.dot(vector.T, plane_normal)) * plane_normal
         return projection
 
     def project_point(self, point):

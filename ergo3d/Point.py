@@ -213,6 +213,9 @@ class Point:
 
 class MarkerPoint(Point):
     def __init__(self, data, name=None):
+        """
+        data: [x, y, z, exist]
+        """
         super().__init__()
         self.data = data
         self.type = 'marker'
@@ -227,6 +230,9 @@ class MarkerPoint(Point):
 
 class VirtualPoint(Point):
     def __init__(self, data, name=None):
+        """
+        data: [xyz, exist]
+        """
         super().__init__()
         self.data = data
         self.type = 'virtual'
@@ -240,3 +246,21 @@ class VirtualPoint(Point):
 
     def output_format(self):
         return (self.xyz, self.exist)
+
+
+class NpPoints(Point):
+    def __init__(self, data, name=None):
+        """
+        data: np array with shape (frame, 3)
+        assume exist is always true
+        """
+        super().__init__()
+        self.data = data
+        self.type = 'np'
+        self.xyz = data.T
+        self.x = self.xyz[0]
+        self.y = self.xyz[1]
+        self.z = self.xyz[2]
+        self.frame_no = data.shape[0]
+        self.name = name
+        self.exist = np.ones(self.frame_no, dtype=bool).tolist()
