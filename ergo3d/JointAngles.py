@@ -12,6 +12,7 @@ class JointAngles:
         self.is_empty = True
         self.zero_frame_or_angle = [None, None, None]
         self.zero_by_frame_not_angle = False
+        self.ergo_name = {'flexion':'flexion', 'abduction':'abduction', 'rotation':'rotation'}
 
     def set_zero(self, frame_or_angle, by_frame=False):
         '''
@@ -246,8 +247,8 @@ def angle_diff(angle1, angle2, input_rad=True, output_rad=True):
     return diff
 
 
-def bland_altman_plot(data1, data2, title='', xlabel='Mean (deg)', ylabel='Difference (deg)', save_path=None,
-                      plot_percentage=0.1):
+def bland_altman_plot(data1, data2, title='', xlabel='Mean (\N{DEGREE SIGN})', ylabel='Difference (\N{DEGREE SIGN})', save_path=None,
+                      plot_percentage=0.05, csfont={'fontname':'Times New Roman'}):
     """
     Bland-Altman plot
     data1, data2: two sets of measurements
@@ -261,14 +262,24 @@ def bland_altman_plot(data1, data2, title='', xlabel='Mean (deg)', ylabel='Diffe
     # only plot 10% of the data
     idx = np.random.choice(range(len(mean)), int(len(mean) * plot_percentage), replace=False)
     plt.scatter(mean[idx], diff[idx], alpha=0.2, s=1)
-    plt.axhline(md, color='gray', linestyle='--')
-    plt.axhline(md + 1.96 * sd, color='gray', linestyle='--')
-    plt.axhline(md - 1.96 * sd, color='gray', linestyle='--')
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.ylim([-50, 50])
-    plt.text(0.5, 0.95, f'Mean diff: {md:.2f}, std {sd:.2f}', horizontalalignment='center', verticalalignment='center', transform=plt.gca().transAxes)
+    plt.axhline(md, color='red', linestyle='--')
+    plt.axhline(md + 1.96 * sd, color='red', linestyle='--')
+    plt.axhline(md - 1.96 * sd, color='red', linestyle='--')
+    text_height = 1
+    text_right_pos = 0.98 * (plt.gca().get_xlim()[1] - plt.gca().get_xlim()[0]) + plt.gca().get_xlim()[0]
+    # text above the line on the right hand side "+1.9, weight='bold'6 SD, size
+    t1 = plt.text(text_right_pos, md + 1.96 * sd + text_height, f'+1.96 SD: {md+1.96*sd:.1f}\N{DEGREE SIGN}', horizontalalignment='right', verticalalignment='bottom',  fontsize=19, weight='bold', **csfont)
+    t2 = plt.text(text_right_pos, md - 1.96 * sd - text_height, f'-1.96 SD: {md-1.96*sd:.1f}\N{DEGREE SIGN}', horizontalalignment='right', verticalalignment='top',     fontsize=19, weight='bold', **csfont)
+    t3 = plt.text(text_right_pos, md , f'Mean: {md:.1f}\N{DEGREE SIGN}',                                      horizontalalignment='right', verticalalignment='bottom',  fontsize=19, weight='bold', **csfont)
+    for t in [t1, t2, t3]:
+        t.set_bbox(dict(facecolor='white', alpha=0.5, edgecolor='white', linewidth=0))
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.title(title,    fontsize=28, weight='bold', **csfont)
+    # plt.xlabel(xlabel,  fontsize=22, **csfont)
+    # plt.ylabel(ylabel,  fontsize=22, **csfont)
+    plt.ylim([-35, 35])
+    # plt.text(0.5, 0.95, f'Mean diff: {md:.2f}, std {sd:.2f}', horizontalalignment='center', verticalalignment='center', transform=plt.gca().transAxes)
     if save_path is not None:
         plt.savefig(save_path)
     else:
